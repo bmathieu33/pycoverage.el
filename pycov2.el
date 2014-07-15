@@ -23,7 +23,13 @@
   "Allow annotating the file with coverage information"
   :lighter pycov2-mode-text
   (if pycov2-mode
-      (progn
+      (if (equal "test_"
+                 (substring (file-name-nondirectory buffer-file-name) 0 5))
+          (progn
+            (message "pycov2: not activating, %S looks like a test case"
+                     (file-name-nondirectory buffer-file-name))
+            (setq pycov2-mode nil))
+           
         (add-hook 'after-save-hook 'pycov2-on-change nil t)
         (add-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string nil t)
         (setq pycov2-binary-installed (pycov2-exe-found pycov2-cov2emacs-cmd))
@@ -31,6 +37,7 @@
         (make-local-variable 'linum-format)
         (setf linum-format 'pycov2-line-format)
         (pycov2-on-change-force))
+
     (kill-local-variable 'linum-format)
     (remove-hook 'after-save-hook 'pycov2-on-change t)
     (remove-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string t)))
