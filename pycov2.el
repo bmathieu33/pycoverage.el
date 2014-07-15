@@ -38,7 +38,7 @@
 
 (defun pycov2-message (txt)
   (if pycov2-debug-message
-      (message text)))
+      (message txt)))
 
 (defun pycov2-on-change-force (&optional beg end len)
   (pycov2-on-change beg end len t))
