@@ -8,24 +8,23 @@ Dependencies
 
 Coverage reporter for Python:
 
-  * coverage.py (currently we only support this)
-  * figleaf (support pending)
-  * nose (there is limited supported for testing a method/function
-    using nose)
+* coverage.py (currently we only support this)
+* figleaf (support pending)
+* nose (there is limited supported for testing a method/function
+  using nose)
 
 Installation
 ============
 
-Put something like this in your .emacs
+Put something like this in your .emacs::
 
-(load-file "/home/matt/work/emacs/pycoverage/pycov2.el")
-(require 'linum)
-(require 'pycov2)
-(add-hook 'python-mode-hook
-(function (lambda ()
-(pycov2-mode)
-(linum-mode))))
-
+  (load-file "/home/matt/work/emacs/pycoverage/pycov2.el")
+  (require 'linum)
+  (require 'pycov2)
+  (add-hook 'python-mode-hook
+            (function (lambda ()
+                        (pycov2-mode)
+                        (linum-mode))))
 
 Install cov2emacs using setuptools or virtualenv or distutils
 
@@ -62,28 +61,28 @@ function and run them.
 Todo
 ====
 
-  * Make invalidate data when you save file!
+* Make invalidate data when you save file!
 
-  * Make it work! Semi-DONE
-  * Use flymake mode instead of/in combination with compile mode? - Initial Flymake DONE
-  * Use missing line numbers instead of covered lines - DONE for coverage.py
-  * Make pycoverage-load-report look for a ``.coverage`` file
-    recursively up the parents of the file - DONE
-  * Make ``cov2emacs`` accept location of ``.coverage`` file - DONE
-  * Make report use normal coverage.py text output, since it's a
-    little friendlier on the eyes (instead of reporting for every
-    group of lines in a file)
-  * Put status in modeline - DONE
-    * Number - current coverage %
-    * OLD - dirty
-    * ? - no .coverage file available
-      Note that if coverage file has not been specified (pycov2-rerun)
-      it will skip over old .coverage files it finds  (see .cov2emacs.log)
-    * ERR - Error (see *messages*)
-  * Figleaf support
-  * Nose integration?
+* Make it work! Semi-DONE
+* Use flymake mode instead of/in combination with compile mode? - Initial Flymake DONE
+* Use missing line numbers instead of covered lines - DONE for coverage.py
+* Make pycoverage-load-report look for a ``.coverage`` file
+  recursively up the parents of the file - DONE
+* Make ``cov2emacs`` accept location of ``.coverage`` file - DONE
+* Make report use normal coverage.py text output, since it's a
+  little friendlier on the eyes (instead of reporting for every
+  group of lines in a file)
+* Put status in modeline - DONE
+  * Number - current coverage %
+  * OLD - dirty
+  * ? - no .coverage file available
+    Note that if coverage file has not been specified (pycov2-rerun)
+    it will skip over old .coverage files it finds  (see .cov2emacs.log)
+  * ERR - Error (see *messages*)
+* Figleaf support
+* Nose integration?
 
 Thanks
 ======
 
-  * rcov - for code to start from
+* rcov - for code to start from
