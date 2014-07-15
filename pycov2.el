@@ -10,25 +10,29 @@
 (defvar pycov2-cov2emacs-cmd "PYTHONPATH=~/.emacs.d/el-get/pycoverage/cov2emacs ~/.emacs.d/el-get/pycoverage/cov2emacs/bin/cov2emacs")
 (defvar pycov2-binary-installed nil)
 (defvar pycov2-debug-message nil)
+(defvar pycov2-linum-format-string "%4d")
 
 (make-variable-buffer-local 'pycov2-mode-text)
 (make-variable-buffer-local 'pycov2-data)
 (make-variable-buffer-local 'pycov2-cov-file)
 (make-variable-buffer-local 'pycov2-binary-installed)
 (make-variable-buffer-local 'pycov2-debug-message)
+(make-variable-frame-local 'pycov2-linum-format-string)
 
 (define-minor-mode pycov2-mode
   "Allow annotating the file with coverage information"
   :lighter pycov2-mode-text
   (if pycov2-mode
       (progn
-         (add-hook 'after-save-hook 'pycov2-on-change nil t)
-         (setq pycov2-binary-installed (pycov2-exe-found pycov2-cov2emacs-cmd))
-	 (linum-mode t)
-	 (setf linum-format 'pycov2-line-format)
-	 (pycov2-on-change-force))
+        (add-hook 'after-save-hook 'pycov2-on-change nil t)
+        (add-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string nil t)
+        (setq pycov2-binary-installed (pycov2-exe-found pycov2-cov2emacs-cmd))
+        (linum-mode t)
+        (setf linum-format 'pycov2-line-format)
+        (pycov2-on-change-force))
     (setf linum-format 'dynamic)
-    (remove-hook 'after-save-hook 'pycov2-on-change t)))
+    (remove-hook 'after-save-hook 'pycov2-on-change t)
+    (remove-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string t)))
 
 (defun pycov2-exe-found (path)
   ;; spliting and taking last item in order to support something like this:
@@ -110,26 +114,34 @@
       ;; add linenum to pycov2-data
       (add-to-list 'pycov2-data number))))
 
-(defun pycov2-line-format (linenum)
-  (cond
-   ((not pycov2-binary-installed)
-    (progn
-      (pycov2-message "Missing cov2emacs in PATH")
-      (propertize " " 'face '(:background "#5c3566" :foreground "#5c3566")) )
-    )
-   ((member linenum pycov2-data)
-     (propertize " " 'face '(:background "#ef2929" :foreground "#ef2929"))
-    )
-   (pycov2-data
-     ;; covered data
-     (propertize " " 'face '(:background " " :foreground " "))
-    )
-   (t
-    ;; some other issue (old data)
-    (progn
-      (pycov2-message "Coverage missing or old")
-      (propertize " " 'face '(:background "#fcaf3e" :foreground "#fcaf3e")))
-    )))
+(defun pycov2-linum-get-format-string ()
+  (let* ((width (length (number-to-string
+                         (count-lines (point-min) (point-max)))))
+         (fmt (concat "%" (number-to-string width) "d")))
+    (setq pycov2-linum-format-string fmt)))
+
+(defun pycov2-line-format (line-number)
+  (let ((content (format pycov2-linum-format-string line-number)))
+    (cond
+     ((not pycov2-binary-installed)
+      (progn
+        (pycov2-message "Missing cov2emacs in PATH")
+        (propertize content 'face '(:background "#5c3566" ;; :foreground "#5c3566"
+                                                )) )
+      )
+     ((member line-number pycov2-data)
+      (propertize content 'face '(:background "#ef2929" ;; :foreground "#ef2929"
+                                              ))
+      )
+     (pycov2-data
+      ;; covered data
+      (propertize content 'face 'linum))
+     (t
+      ;; some other issue (old data)
+      (progn
+        (pycov2-message "Coverage missing or old")
+        (propertize content 'face '(:background "#FCAF3E" :foreground "black")))
+      ))))
 
 (defun pycov2-run-better (filename &optional cov_file)
   (let* ((command (if cov_file
