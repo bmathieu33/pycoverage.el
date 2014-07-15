@@ -28,9 +28,10 @@
         (add-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string nil t)
         (setq pycov2-binary-installed (pycov2-exe-found pycov2-cov2emacs-cmd))
         (linum-mode t)
+        (make-local-variable 'linum-format)
         (setf linum-format 'pycov2-line-format)
         (pycov2-on-change-force))
-    (setf linum-format 'dynamic)
+    (kill-local-variable 'linum-format)
     (remove-hook 'after-save-hook 'pycov2-on-change t)
     (remove-hook 'linum-before-numbering-hook 'pycov2-linum-get-format-string t)))
 
