@@ -23,8 +23,11 @@
   "Allow annotating the file with coverage information"
   :lighter pycov2-mode-text
   (if pycov2-mode
-      (if (equal "test_"
-                 (substring (file-name-nondirectory buffer-file-name) 0 5))
+      (if (or
+           (equal "tests" (file-name-base buffer-file-name))
+           (equal "test_"
+                  (substring (file-name-nondirectory buffer-file-name) 0 5))
+           (member "tests" (split-string buffer-file-name "/"))) ; inside a unit tests directory
           (progn
             (message "pycov2: not activating, %S looks like a test case"
                      (file-name-nondirectory buffer-file-name))
